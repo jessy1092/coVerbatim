@@ -55,17 +55,23 @@ $(document).ready(function ()
         var index = 0;
         var results = '';
         $('.editContent .field').remove();
-        while (totalSec < num) {
+        while (totalSec <= num) {
             var startTime = totalSec;
             var endTime = (totalSec + splitTimer) > num ? num : (totalSec + splitTimer);
             // console.log(startTime + '' + endTime);
             addItem(index, startTime, endTime, '');
 
-            results += startTime + ',' + endTime + ',' + ' \n';
+            if ((totalSec + splitTimer) > num ) {
+                results += startTime + ',' + endTime + ', ';
+            }
+            else {
+                results += startTime + ',' + endTime + ',' + ' \n';
+            }
 
             totalSec += splitTimer;
             index++;
         }
+        addSectorListner();
         if (createEthercalc) {
             // console.log(results);
             postEthercalc(results);
@@ -125,7 +131,9 @@ $(document).ready(function ()
     };
 
     var postEthercalcUpdate = function (index, startTime, endTime, content) {
-        var command = 'set C' + index + ' text t ' + content;
+        var command =   'set A' + index + ' value n ' + startTime + '\n' +
+                        'set B' + index + ' value n ' + endTime + '\n' +
+                        'set C' + index + ' text t ' + content;
         console.log(command);
         $.ajax({
             url: "https://ethercalc.org/_/"+ethercalcName,
@@ -137,13 +145,14 @@ $(document).ready(function ()
     }
 
     var postInitEthercalc = function () {
-        $.ajax({
-            url: "https://ethercalc.org/_/"+ethercalcName,
-            type: 'POST',
-            contentType: 'text/plan',
-            processData: false,
-            data:   'set A1 test t  '
-        });
+        // $.ajax({
+        //     url: "https://ethercalc.org/_/"+ethercalcName,
+        //     type: 'POST',
+        //     contentType: 'text/plan',
+        //     processData: false,
+        //     data:   'set A1 test t start'
+        // });
+        $('.ethercalcFrame').attr('src', '//ethercalc.org/' + ethercalcName);
     }
 
     var compileEthercalc = function () {
@@ -151,7 +160,9 @@ $(document).ready(function ()
             .done(compileJson)
             .fail(function () {
                 console.log('fail to compileEthercalc');
+                // addSector(youtubeDuration, true);
                 postInitEthercalc();
+                addSector(youtubeDuration, true);
             });
     };
 

@@ -1,13 +1,14 @@
 $(document).ready(function ()
 {
     var paths = location.pathname.split('/') || [];
-    var ethercalc_name = location.hash.substring(2);
+    var ethercalcName = location.hash.substring(2);
     var csv_api_source = '';
     var splitTimer = 180;
     var youtubeAPIUrl = 'http://gdata.youtube.com/feeds/api/videos/';
     var youtubeDuration = 0;
     var youtubeID = '';
     var history_state = {};
+
     $('.sidebar').sidebar({overlay: true}).sidebar('toggle');
 
     $('.youtubeContent .submit.button').on('click', function () {
@@ -16,48 +17,57 @@ $(document).ready(function ()
         // console.log(youtubeUrl);
         $('.youtubeFrame').removeClass('hidden').addClass('unhidden');
 
-        if (youtubeUrl.match(/^.*.youtube.com\//)) {
-            var startPostition = youtubeUrl.indexOf('v=') + 2;
+        if (youtubeUrl.match(/^.*.youtube.com\/embed\//)) {
+            var startPostition = youtubeUrl.indexOf('embed') + 6;
             youtubeID = youtubeUrl.substring(startPostition, startPostition + 11);
+            // console.log(youtubeID);
         }
-        else if (youtubeUrl.match(/^.*.youtube.com\/embed\//)) {
-            var startPostition = youtubeUrl.indexOf('embed') + 5;
+        else if (youtubeUrl.match(/^.*.youtube.com\//)) {
+            var startPostition = youtubeUrl.indexOf('v=') + 2;
             youtubeID = youtubeUrl.substring(startPostition, startPostition + 11);
         }
 
         $('.youtubeFrame').attr('src', '//www.youtube.com/embed/' + youtubeID);
-        ethercalc_name = youtubeID;
-        csv_api_source = 'https://ethercalc.org/_/'+ethercalc_name+'/csv';
+        ethercalcName = youtubeID;
+        csv_api_source = 'https://ethercalc.org/_/'+ethercalcName+'/csv';
 
         $.ajax({
             type: 'GET',
             url: youtubeAPIUrl + youtubeID + '?alt=json',
             dataType: 'json'
         }).done(function (youtubeData) {
-            youtubeDuration = youtubeData.entry.media$group.yt$duration.seconds;
+            youtubeDuration = parseInt(youtubeData.entry.media$group.yt$duration.seconds);
             // console.log(youtubeDuration);
             // addSector(youtubeDuration, false);
             compileEthercalc();
-            addSectorListner();
-            history.pushState(history_state,'', '/#/' + ethercalc_name);
+            history.pushState(history_state,'', '/#/' + ethercalcName);
         });
     });
+
+    if (ethercalcName != '' && ethercalcName != 'undefine') {
+        $('.youtubeUrl').val('http://www.youtube.com/embed/' + ethercalcName);
+        $('.youtubeContent .submit.button').trigger('click');
+    }
 
     var addSector = function (num, createEthercalc) {
         var totalSec = 0;
         var index = 0;
+        var results = '';
         $('.editContent .field').remove();
         while (totalSec < num) {
             var startTime = totalSec;
             var endTime = (totalSec + splitTimer) > num ? num : (totalSec + splitTimer);
-
+            // console.log(startTime + '' + endTime);
             addItem(index, startTime, endTime, '');
 
-            if (createEthercalc) {
-                postEthercalc(startTime, endTime, '');
-            }
+            results += startTime + ',' + endTime + ',' + ' \n';
+
             totalSec += splitTimer;
             index++;
+        }
+        if (createEthercalc) {
+            // console.log(results);
+            postEthercalc(results);
         }
     }
 
@@ -98,39 +108,44 @@ $(document).ready(function ()
             var startTime = $(this).prev().prev().attr('sectorStartTime');
             var endTime = $(this).prev().prev().attr('sectorEndTime');
             var content = $(this).prev().children().val();
-            console.log(index + '' + startTime + '' + endTime + content);
+            // console.log(index + '' + startTime + '' + endTime + content);
             postEthercalcUpdate(index + 1, startTime, endTime, content);
         });
     }
 
-    var postEthercalc = function (startTime, endTime, content){
+    var postEthercalc = function (results){
         $.ajax({
-            url: "https://ethercalc.org/_/"+ethercalc_name,
+            url: "https://ethercalc.org/_/"+ethercalcName,
             type: 'POST',
             contentType: 'text/csv',
             processData: false,
-            data: startTime + ',' + endTime + ',' + content
-        });
+            data: results
+        }).done();
     };
 
     var postEthercalcUpdate = function (index, startTime, endTime, content) {
         $.ajax({
-            url: "https://ethercalc.org/_/"+ethercalc_name,
+            url: "https://ethercalc.org/_/"+ethercalcName,
             type: 'POST',
             contentType: 'text/plan',
             processData: false,
-            data:   'set C' + index + ' text ' + content + '\n'
+            data:   'set C' + index + ' text t ' + content + '\n'
         });
     }
 
     var compileEthercalc = function () {
-        $.get(csv_api_source).pipe(CSV.parse).done(compileJson);
+        $.get(csv_api_source).pipe(CSV.parse)
+            .done(compileJson)
+            .fail(function () {
+                addSector(youtubeDuration, true);
+            });
     };
 
     var compileJson = function (rows) {
         // console.log(rows);
         if (rows.length == 1 && rows[0].length == 1 && rows[0][0].length == 0) {
             addSector(youtubeDuration, true);
+            return;
         }
 
         $('.editContent .field').remove();
@@ -139,7 +154,7 @@ $(document).ready(function ()
             var startTime = row[0];
             var endTime = row[1];
             var content = row[2];
-            console.log(startTime + ' ' + endTime + ' ' + content);
+            // console.log(startTime + ' ' + endTime + ' ' + content);
             if (startTime == '' && endTime == '') {
                 return;
             }

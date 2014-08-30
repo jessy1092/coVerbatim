@@ -125,12 +125,14 @@ $(document).ready(function ()
     };
 
     var postEthercalcUpdate = function (index, startTime, endTime, content) {
+        var command = 'set C' + index + ' text t ' + content;
+        console.log(command);
         $.ajax({
             url: "https://ethercalc.org/_/"+ethercalcName,
             type: 'POST',
             contentType: 'text/plan',
             processData: false,
-            data:   'set C' + index + ' text t ' + content + '\n'
+            data: command
         });
     }
 
@@ -140,7 +142,7 @@ $(document).ready(function ()
             type: 'POST',
             contentType: 'text/plan',
             processData: false,
-            data:   'set A1 value n  \n'
+            data:   'set A1 test t  '
         });
     }
 
@@ -154,7 +156,7 @@ $(document).ready(function ()
     };
 
     var compileJson = function (rows) {
-        // console.log(rows);
+        console.log(rows);
         if (rows.length == 1 && rows[0].length == 1 && rows[0][0].length == 0) {
             addSector(youtubeDuration, true);
             return;

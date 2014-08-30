@@ -2,6 +2,7 @@ $(document).ready(function ()
 {
     var paths = location.pathname.split('/') || [];
     var ethercalcName = location.hash.substring(2);
+    console.log(ethercalcName);
     var csv_api_source = '';
     var splitTimer = 180;
     var youtubeAPIUrl = 'http://gdata.youtube.com/feeds/api/videos/';
@@ -120,7 +121,7 @@ $(document).ready(function ()
             contentType: 'text/csv',
             processData: false,
             data: results
-        }).done();
+        });
     };
 
     var postEthercalcUpdate = function (index, startTime, endTime, content) {
@@ -133,11 +134,22 @@ $(document).ready(function ()
         });
     }
 
+    var postInitEthercalc = function () {
+        $.ajax({
+            url: "https://ethercalc.org/_/"+ethercalcName,
+            type: 'POST',
+            contentType: 'text/plan',
+            processData: false,
+            data:   'set A1 value n  \n'
+        });
+    }
+
     var compileEthercalc = function () {
         $.get(csv_api_source).pipe(CSV.parse)
             .done(compileJson)
             .fail(function () {
-                addSector(youtubeDuration, true);
+                console.log('fail to compileEthercalc');
+                postInitEthercalc();
             });
     };
 

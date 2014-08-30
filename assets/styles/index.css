@@ -1,0 +1,48 @@
+@charset "utf-8";
+
+/*-------------------------| Common |-------------------------*/
+
+body {
+    font-family:'微軟正黑體';
+    padding: 0px;
+    margin: 0px;
+    overflow-x: hidden;
+}
+
+.content {
+    width: 960px;
+    margin: 0px auto;
+    margin-top: 50px;
+}
+
+.editContent {
+    float: left;
+}
+
+.text {
+    margin-top: 20px;
+}
+
+.youtubeContent {
+    width: 400px;
+    float: right;
+}
+
+.hidden {
+    height: 0px;
+    width: 0px;
+}
+
+.unhidden {
+    height: 250px;
+    width: 370px;
+}
+
+.editContent {
+    width: 540px;
+}
+
+/*-------------------------| Top |-------------------------*/
+
+/*-------------------------| Footer |-------------------------*/
+

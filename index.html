@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="chrome=1">
+        <title>coVerbatim</title>
+
+        <link rel="stylesheet" type="text/css" href="assets/styles/index.css"></link>
+        <link rel="stylesheet" type="text/css" href="vendors/semantic-ui/0.17.0/css/semantic.min.css"></link>
+
+        <script type="text/javascript" src="vendors/angular/1.2.16/angular.min.js"></script>
+        <script type="text/javascript" src="vendors/jquery/1.11.1/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="vendors/d3js/3.4.6/d3.min.js"></script>
+        <script type="text/javascript" src="vendors/semantic-ui/0.17.0/javascript/semantic.min.js"></script>
+
+        <script type="text/javascript" src="assets/scripts/index.js"></script>
+    </head>
+    <body>
+        <div class="ui top sidebar">
+            <div class="ui inverted menu">
+                <div class="header item">coVerbatim</div>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <div class="youtubeContent">
+                <div class="ui form segment">
+                    <div class="field">
+                        <iframe class="youtubeFrame hidden"  frameborder="0" src="" allowfullscreen></iframe>
+                    </div>
+                    <div class="field">
+                        <label>URL</label>
+                        <div class="ui left labeled icon input">
+                            <input class="youtubeUrl" placeholder="Youtube URL" type="text">
+                            <i class="youtube icon"></i>
+                        </div>
+                    </div>
+                    <div class="ui blue submit button">Enter</div>
+                </div>
+            </div>
+
+            <div class="editContent">
+                <div class="ui form segment">
+                    <div class="field">
+                        <div class="ui ribbon label"> time </div>
+                        <div class="text">
+                            <textarea></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </body>
+</html>

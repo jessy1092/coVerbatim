@@ -40,7 +40,7 @@ $(document).ready(function ()
             // console.log(youtubeDuration);
             // addSector(youtubeDuration, false);
             compileEthercalc();
-            history.pushState(history_state,'', '/#/' + ethercalcName);
+            history.pushState(history_state,'', '/coVerbatim/#/' + ethercalcName);
         });
     });
 

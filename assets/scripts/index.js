@@ -10,7 +10,7 @@ $(document).ready(function ()
     var history_state = {};
     $('.sidebar').sidebar({overlay: true}).sidebar('toggle');
 
-    $('.submit.button').on('click', function () {
+    $('.youtubeContent .submit.button').on('click', function () {
         var youtubeUrl = $('.youtubeUrl').val();
 
         // console.log(youtubeUrl);
@@ -45,22 +45,24 @@ $(document).ready(function ()
 
     var addSector = function (num, createEthercalc) {
         var totalSec = 0;
+        var index = 0;
         $('.editContent .field').remove();
         while (totalSec < num) {
             var startTime = totalSec;
             var endTime = (totalSec + splitTimer) > num ? num : (totalSec + splitTimer);
 
-            addItem(startTime, endTime, '');
+            addItem(index, startTime, endTime, '');
 
             if (createEthercalc) {
-                post_ethercalc(startTime, endTime, '');
+                postEthercalc(startTime, endTime, '');
             }
             totalSec += splitTimer;
+            index++;
         }
     }
 
-    var addItem = function (startTime, endTime, content) {
-        var new_item = '<div class="field"><div class="ui orange ribbon label sectorLabel " sectorStartTime=' + startTime + ' sectorEndTime=' + endTime + '>' + transSec(startTime) +' ~ ' + transSec(endTime) + '</div><div class="text"><textarea>' + content + '</textarea></div></div>'
+    var addItem = function (index, startTime, endTime, content) {
+        var new_item = '<div class="field"><div class="ui orange ribbon label sectorLabel " sectorStartTime=' + startTime + ' sectorEndTime=' + endTime + '>' + transSec(startTime) +' ~ ' + transSec(endTime) + '</div><div class="text"><textarea>' + content + '</textarea></div><div class="ui blue submit button" sectorID=' + index + '>Submit</div></div>'
         $('.editContent .ui.form.segment').append(new_item);
     }
 
@@ -91,9 +93,17 @@ $(document).ready(function ()
             // console.log(startTime + '  ' + endTime);
             $('.youtubeFrame').attr('src', '//www.youtube.com/embed/' + youtubeID + '?start=' + startTime + '&end=' + endTime);
         });
+        $('.editContent .submit.button').on('click', function () {
+            var index = parseInt($(this).attr('sectorID'));
+            var startTime = $(this).prev().prev().attr('sectorStartTime');
+            var endTime = $(this).prev().prev().attr('sectorEndTime');
+            var content = $(this).prev().children().val();
+            console.log(index + '' + startTime + '' + endTime + content);
+            postEthercalcUpdate(index + 1, startTime, endTime, content);
+        });
     }
 
-    var post_ethercalc = function (startTime, endTime, content){
+    var postEthercalc = function (startTime, endTime, content){
         $.ajax({
             url: "https://ethercalc.org/_/"+ethercalc_name,
             type: 'POST',
@@ -102,6 +112,16 @@ $(document).ready(function ()
             data: startTime + ',' + endTime + ',' + content
         });
     };
+
+    var postEthercalcUpdate = function (index, startTime, endTime, content) {
+        $.ajax({
+            url: "https://ethercalc.org/_/"+ethercalc_name,
+            type: 'POST',
+            contentType: 'text/plan',
+            processData: false,
+            data:   'set C' + index + ' text ' + content + '\n'
+        });
+    }
 
     var compileEthercalc = function () {
         $.get(csv_api_source).pipe(CSV.parse).done(compileJson);
@@ -119,11 +139,11 @@ $(document).ready(function ()
             var startTime = row[0];
             var endTime = row[1];
             var content = row[2];
-            // console.log(startTime + ' ' + endTime + ' ' + content);
+            console.log(startTime + ' ' + endTime + ' ' + content);
             if (startTime == '' && endTime == '') {
                 return;
             }
-            addItem(startTime, endTime, content);
+            addItem(rowIndex, startTime, endTime, content);
 
             if (rowIndex == rows.length - 1) {
                 addSectorListner();

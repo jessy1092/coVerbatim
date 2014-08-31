@@ -105,8 +105,12 @@ $(document).ready(function ()
     var addItem = function (index, startTime, endTime, content, user) {
         var color = 'teal';
         var hiddenOrNot = '';
+        var disabled = 'disabled';
         if (user != UserName) {
             color = '';
+        }
+        else {
+            disabled = '';
         }
         console.log(user);
         if (user == 'nobody' || user == '') {
@@ -117,8 +121,11 @@ $(document).ready(function ()
                         '<div class="ui ' + color + ' label name ' + hiddenOrNot +'">' + user + '</div>' +
                         '<div class="ui checkbox"><input class="check" id="check' + index + '" type="checkbox"><label for="check' + index + '">I want this!</label></div>' +
                         '<div class="text"><textarea>' + content + '</textarea></div>' +
-                        '<div class="ui blue submit disabled button" sectorID=' + index + '>Submit</div></div>'
+                        '<div class="ui blue submit ' + disabled + ' button" sectorID=' + index + '>Submit</div></div>'
         $('.editContent .ui.form.segment').append(new_item);
+        if (disabled == '') {
+            $('#check' + index).prop('checked', true);
+        }
     }
 
     var transSec = function (num) {

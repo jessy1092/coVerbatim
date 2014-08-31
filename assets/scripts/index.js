@@ -9,6 +9,7 @@ $(document).ready(function ()
     var splitTimer = 180;
     var history_state = {};
     var UserName = 'LEE';
+    var AuthorsArray = [];
 
     console.log(ethercalcName);
 
@@ -264,10 +265,16 @@ $(document).ready(function ()
                 user = row[3].toUpperCase();
             }
 
+            if (AuthorsArray.indexOf(user) < 0) {
+                AuthorsArray.push(user);
+                // console.log(AuthorsArray);
+            }
+
             addItem(rowIndex + 1, startTime, endTime, content, user);
 
             if (rowIndex == rows.length - 1) {
                 addSectorListner();
+                $('.youtubeContent .list .description').text(AuthorsArray.join(','));
             }
         });
     }

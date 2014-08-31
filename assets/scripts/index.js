@@ -73,7 +73,7 @@ $(document).ready(function ()
         }
     });
 
-    if (ethercalcName != '' && ethercalcName != 'undefine') {
+    if (ethercalcName != '' && typeof (ethercalcName) != 'undefined') {
         $('.youtubeUrl').val('http://www.youtube.com/embed/' + ethercalcName);
         $('.youtubeContent .submit.button').trigger('click');
     }
@@ -162,6 +162,7 @@ $(document).ready(function ()
                 var endTime = $(this).prev().prev().prev().prev().attr('sectorEndTime');
                 var content = $(this).prev().children().val();
                 console.log('submit: ' + index + '' + startTime + '' + endTime + content);
+                console.log('content' + content);
                 var commandPool = creatCommand(index, startTime, endTime, content);
                 postEthercalcUpdate(commandPool);
             }
@@ -254,11 +255,15 @@ $(document).ready(function ()
             var startTime = row[0];
             var endTime = row[1];
             var content = row[2];
-            var user = row[3].toUpperCase();
+            var user = 'nobody';
             // console.log(startTime + ' ' + endTime + ' ' + content);
             if (startTime == '' && endTime == '') {
                 return;
             }
+            if (typeof (row[3]) != 'undefined' && row[3] != '') {
+                user = row[3].toUpperCase();
+            }
+
             addItem(rowIndex + 1, startTime, endTime, content, user);
 
             if (rowIndex == rows.length - 1) {

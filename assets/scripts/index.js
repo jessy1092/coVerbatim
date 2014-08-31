@@ -2,20 +2,29 @@ $(document).ready(function ()
 {
     var paths = location.pathname.split('/') || [];
     var ethercalcName = location.hash.substring(2);
-    console.log(ethercalcName);
     var csv_api_source = '';
-    var splitTimer = 180;
     var youtubeAPIUrl = 'http://gdata.youtube.com/feeds/api/videos/';
-    var youtubeDuration = 0;
     var youtubeID = '';
+    var youtubeDuration = 0;
+    var splitTimer = 180;
     var history_state = {};
+    var UserName = 'LEE';
+
+    console.log(ethercalcName);
 
     $('.sidebar').sidebar({overlay: true}).sidebar('toggle');
+    // $('.ui.checkbox').checkbox();
 
     $('.youtubeContent .submit.button').on('click', function () {
         var youtubeUrl = $('.youtubeUrl').val();
 
         // console.log(youtubeUrl);
+        UserName = $('.userName').val().toUpperCase() || 'GUEST';
+        console.log(UserName);
+        if (youtubeUrl == '') {
+            return;
+        }
+
         $('.youtubeFrame').removeClass('hidden').addClass('unhidden');
 
         if (youtubeUrl.match(/^.*.youtube.com\/embed\//)) {
@@ -27,10 +36,13 @@ $(document).ready(function ()
             var startPostition = youtubeUrl.indexOf('v=') + 2;
             youtubeID = youtubeUrl.substring(startPostition, startPostition + 11);
         }
+        else {
+            return;
+        }
 
         $('.youtubeFrame').attr('src', '//www.youtube.com/embed/' + youtubeID);
         ethercalcName = youtubeID;
-        csv_api_source = 'https://ethercalc.org/_/'+ethercalcName+'/csv';
+        csv_api_source = 'https://ethercalc.org/_/' + ethercalcName + '/csv';
 
         $.ajax({
             type: 'GET',
@@ -43,6 +55,22 @@ $(document).ready(function ()
             compileEthercalc();
             history.pushState(history_state,'', '/coVerbatim/#/' + ethercalcName);
         });
+    });
+
+    $('.editContent .check').change(function () {
+        // console.log($(this).is(':checked'));
+        var index = $(this).parent().next().next().attr('sectorID');
+        // console.log(index);
+        if ($(this).is(':checked')) {
+            $(this).parent().prev().removeClass('hidden');
+            $(this).parent().next().next().removeClass('disabled');
+            console.log(UserName);
+            $(this).parent().prev().text(UserName);
+        }
+        else {
+            $(this).parent().prev().addClass('hidden');
+            $(this).parent().next().next().addClass('disabled');
+        }
     });
 
     if (ethercalcName != '' && ethercalcName != 'undefine') {
@@ -60,7 +88,7 @@ $(document).ready(function ()
             var startTime = totalSec;
             var endTime = (totalSec + splitTimer) > num ? num : (totalSec + splitTimer);
             // console.log(startTime + '' + endTime);
-            addItem(index, startTime, endTime, '');
+            addItem(index, startTime, endTime, '', 'nobody');
 
             commandPool = commandPool.concat(creatCommand(index, startTime, endTime, ''));
 
@@ -74,8 +102,22 @@ $(document).ready(function ()
         }
     }
 
-    var addItem = function (index, startTime, endTime, content) {
-        var new_item = '<div class="field"><div class="ui orange ribbon label sectorLabel " sectorStartTime=' + startTime + ' sectorEndTime=' + endTime + '>' + transSec(startTime) +' ~ ' + transSec(endTime) + '</div><div class="text"><textarea>' + content + '</textarea></div><div class="ui blue submit button" sectorID=' + index + '>Submit</div></div>'
+    var addItem = function (index, startTime, endTime, content, user) {
+        var color = 'teal';
+        var hiddenOrNot = '';
+        if (user != UserName) {
+            color = '';
+        }
+        console.log(user);
+        if (user == 'nobody' || user == '') {
+            hiddenOrNot = 'hidden';
+        }
+
+        var new_item =  '<div class="field"><div class="ui orange ribbon label sectorLabel " sectorStartTime=' + startTime + ' sectorEndTime=' + endTime + '>' + transSec(startTime) +' ~ ' + transSec(endTime) + '</div>' +
+                        '<div class="ui ' + color + ' label name ' + hiddenOrNot +'">' + user + '</div>' +
+                        '<div class="ui checkbox"><input class="check" id="check' + index + '" type="checkbox"><label for="check' + index + '">I want this!</label></div>' +
+                        '<div class="text"><textarea>' + content + '</textarea></div>' +
+                        '<div class="ui blue submit disabled button" sectorID=' + index + '>Submit</div></div>'
         $('.editContent .ui.form.segment').append(new_item);
     }
 
@@ -107,13 +149,33 @@ $(document).ready(function ()
             $('.youtubeFrame').attr('src', '//www.youtube.com/embed/' + youtubeID + '?start=' + startTime + '&end=' + endTime);
         });
         $('.editContent .submit.button').on('click', function () {
-            var index = parseInt($(this).attr('sectorID'));
-            var startTime = $(this).prev().prev().attr('sectorStartTime');
-            var endTime = $(this).prev().prev().attr('sectorEndTime');
-            var content = $(this).prev().children().val();
-            // console.log(index + '' + startTime + '' + endTime + content);
-            var commandPool = creatCommand(index, startTime, endTime, content);
-            postEthercalcUpdate(commandPool);
+            if (!$(this).hasClass('disabled')) {
+                var index = parseInt($(this).attr('sectorID'));
+                var startTime = $(this).prev().prev().prev().prev().attr('sectorStartTime');
+                var endTime = $(this).prev().prev().prev().prev().attr('sectorEndTime');
+                var content = $(this).prev().children().val();
+                console.log('submit: ' + index + '' + startTime + '' + endTime + content);
+                var commandPool = creatCommand(index, startTime, endTime, content);
+                postEthercalcUpdate(commandPool);
+            }
+        });
+        $('.editContent .check').change(function () {
+            // console.log($(this).is(':checked'));
+            var index = $(this).parent().next().next().attr('sectorID');
+            // console.log(index);
+            if ($(this).is(':checked')) {
+                $(this).parent().prev().removeClass('hidden');
+                $(this).parent().prev().addClass('teal');
+                $(this).parent().next().next().removeClass('disabled');
+                console.log(UserName);
+                $(this).parent().prev().text(UserName);
+                postEthercalcUpdate(createWantCommand(index , UserName));
+            }
+            else {
+                $(this).parent().prev().addClass('hidden');
+                $(this).parent().next().next().addClass('disabled');
+                postEthercalcUpdate(createWantCommand(index , 'nobody'));
+            }
         });
     }
 
@@ -136,6 +198,12 @@ $(document).ready(function ()
             commandPool.push('set C' + index + ' text t ' + content);
         }
         // console.log(commandPool);
+        return commandPool;
+    }
+
+    var createWantCommand = function (index, name) {
+        var commandPool = [];
+        commandPool.push('set D' + index + ' text t ' + name);
         return commandPool;
     }
 
@@ -167,7 +235,7 @@ $(document).ready(function ()
     };
 
     var compileJson = function (rows) {
-        console.log(rows);
+        // console.log(rows);
         if (rows.length == 1 && rows[0].length == 1 && rows[0][0].length == 0) {
             addSector(youtubeDuration, true);
             return;
@@ -179,11 +247,12 @@ $(document).ready(function ()
             var startTime = row[0];
             var endTime = row[1];
             var content = row[2];
+            var user = row[3].toUpperCase();
             // console.log(startTime + ' ' + endTime + ' ' + content);
             if (startTime == '' && endTime == '') {
                 return;
             }
-            addItem(rowIndex + 1, startTime, endTime, content);
+            addItem(rowIndex + 1, startTime, endTime, content, user);
 
             if (rowIndex == rows.length - 1) {
                 addSectorListner();

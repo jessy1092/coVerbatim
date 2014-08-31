@@ -44,6 +44,15 @@ body {
     width: 370px;
 }
 
+.ui.checkbox {
+    float: right;
+    margin-top: 10px;
+}
+
+.editContent .label.name {
+    margin-top: 3px;
+}
+
 /*-------------------------| Top |-------------------------*/
 
 /*-------------------------| Footer |-------------------------*/

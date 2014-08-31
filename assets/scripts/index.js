@@ -183,7 +183,7 @@ $(document).ready(function ()
             if (startTime == '' && endTime == '') {
                 return;
             }
-            addItem(rowIndex, startTime, endTime, content);
+            addItem(rowIndex + 1, startTime, endTime, content);
 
             if (rowIndex == rows.length - 1) {
                 addSectorListner();

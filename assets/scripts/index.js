@@ -52,8 +52,9 @@ $(document).ready(function ()
 
     var addSector = function (num, createEthercalc) {
         var totalSec = 0;
-        var index = 0;
+        var index = 1;
         var results = '';
+        var commandPool = [];
         $('.editContent .field').remove();
         while (totalSec <= num) {
             var startTime = totalSec;
@@ -61,20 +62,15 @@ $(document).ready(function ()
             // console.log(startTime + '' + endTime);
             addItem(index, startTime, endTime, '');
 
-            if ((totalSec + splitTimer) > num ) {
-                results += startTime + ',' + endTime + ', ';
-            }
-            else {
-                results += startTime + ',' + endTime + ',' + ' \n';
-            }
+            commandPool = commandPool.concat(creatCommand(index, startTime, endTime, ''));
 
             totalSec += splitTimer;
             index++;
         }
         addSectorListner();
         if (createEthercalc) {
-            // console.log(results);
-            postEthercalc(results);
+            console.log(commandPool);
+            postEthercalcUpdate(commandPool);
         }
     }
 
@@ -116,7 +112,8 @@ $(document).ready(function ()
             var endTime = $(this).prev().prev().attr('sectorEndTime');
             var content = $(this).prev().children().val();
             // console.log(index + '' + startTime + '' + endTime + content);
-            postEthercalcUpdate(index + 1, startTime, endTime, content);
+            var commandPool = creatCommand(index, startTime, endTime, content);
+            postEthercalcUpdate(commandPool);
         });
     }
 
@@ -130,10 +127,20 @@ $(document).ready(function ()
         });
     };
 
-    var postEthercalcUpdate = function (index, startTime, endTime, content) {
-        var command =   'set A' + index + ' value n ' + startTime + '\n' +
-                        'set B' + index + ' value n ' + endTime + '\n' +
-                        'set C' + index + ' text t ' + content;
+    var creatCommand = function (index, startTime, endTime, content) {
+        var commandPool = [];
+
+        commandPool.push('set A' + index + ' value n ' + startTime);
+        commandPool.push('set B' + index + ' value n ' + endTime);
+        if (content != '') {
+            commandPool.push('set C' + index + ' text t ' + content);
+        }
+        // console.log(commandPool);
+        return commandPool;
+    }
+
+    var postEthercalcUpdate = function (commandPool) {
+        var command =   commandPool.join('\n');
         console.log(command);
         $.ajax({
             url: "https://ethercalc.org/_/"+ethercalcName,
@@ -145,13 +152,6 @@ $(document).ready(function ()
     }
 
     var postInitEthercalc = function () {
-        // $.ajax({
-        //     url: "https://ethercalc.org/_/"+ethercalcName,
-        //     type: 'POST',
-        //     contentType: 'text/plan',
-        //     processData: false,
-        //     data:   'set A1 test t start'
-        // });
         $('.ethercalcFrame').attr('src', '//ethercalc.org/' + ethercalcName);
     }
 

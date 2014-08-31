@@ -1,7 +1,7 @@
 {
     "name"       : "coVerbatim",
-    "description": "Verbatim youtube film.",
-    "version"    : "0.1.0",
+    "description": "It is the simple verbatim system. Let users coberate to create youtube's verbatim easily.",
+    "version"    : "0.0.1",
     "contributor": [
         {
             "name" : "Lee",

@@ -1,6 +1,10 @@
 coVerbatim
 =============
-Verbatim youtube film.
+Welcome to coVerbatim. It is the simple verbatim system. Let users coberate to create youtube's verbatim easily. 
+
+Imspire from [hackfoldr-2.0](http://hack.etblue.tw/) and [oTranscribe](http://otranscribe.com/). 
+
+Thanks [ethercalc](https://ethercalc.org/) support database.
 
 ## Structure
 

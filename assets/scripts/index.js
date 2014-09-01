@@ -74,7 +74,7 @@ $(document).ready(function ()
         }
     });
 
-    if (ethercalcName != '' && typeof (ethercalcName) != 'undefined') {
+    if (ethercalcName != '' && typeof (ethercalcName) != 'undefined' && ethercalcName != 'welcome-to-coverbatim') {
         $('.youtubeUrl').val('http://www.youtube.com/embed/' + ethercalcName);
         $('.youtubeContent .submit.button').trigger('click');
     }

@@ -6,7 +6,7 @@ $(document).ready(function ()
     var youtubeAPIUrl = 'http://gdata.youtube.com/feeds/api/videos/';
     var youtubeID = '';
     var youtubeDuration = 0;
-    var splitTimer = 180;
+    var splitTimer = 30;
     var history_state = {};
     var UserName = 'LEE';
     var AuthorsArray = [];
@@ -84,14 +84,14 @@ $(document).ready(function ()
         var index = 1;
         var results = '';
         var commandPool = [];
-        $('.editContent .field').remove();
+        $('.editContent .segment').remove();
         while (totalSec <= num) {
             var startTime = totalSec;
             var endTime = (totalSec + splitTimer) > num ? num : (totalSec + splitTimer);
             // console.log(startTime + '' + endTime);
             addItem(index, startTime, endTime, '', 'nobody');
 
-            commandPool = commandPool.concat(creatCommand(index, startTime, endTime, ''));
+            commandPool = commandPool.concat(creatCommand(index, startTime, endTime, '', 'nobody'));
 
             totalSec += splitTimer;
             index++;
@@ -118,12 +118,14 @@ $(document).ready(function ()
             hiddenOrNot = 'hidden';
         }
 
-        var new_item =  '<div class="field"><div class="ui orange ribbon label sectorLabel " sectorStartTime=' + startTime + ' sectorEndTime=' + endTime + '>' + transSec(startTime) +' ~ ' + transSec(endTime) + '</div>' +
+        var new_item =  '<div class="ui form segment"><div class="edit field"><div class="ui orange ribbon label sectorLabel " sectorStartTime=' + startTime + ' sectorEndTime=' + endTime + '>' + transSec(startTime) +' ~ ' + transSec(endTime) + '</div>' +
                         '<div class="ui ' + color + ' label name ' + hiddenOrNot +'">' + user + '</div>' +
                         '<div class="ui checkbox"><input class="check" id="check' + index + '" type="checkbox"><label for="check' + index + '">I want this!</label></div>' +
                         '<div class="text"><textarea>' + content + '</textarea></div>' +
-                        '<div class="ui blue submit ' + disabled + ' button" sectorID=' + index + '>Submit</div></div>'
-        $('.editContent .ui.form.segment').append(new_item);
+                        '<div class="ui blue submit ' + disabled + ' button" sectorID=' + index + '>Submit</div></div></div>';
+        $('.editContent').append(new_item);
+        $('.editContent .button').hide();
+        $('.editContent .text').hide();
         if (disabled == '') {
             $('#check' + index).prop('checked', true);
         }
@@ -132,6 +134,9 @@ $(document).ready(function ()
     var transSec = function (num) {
         var time = '';
         var tmpTime;
+        if (num < 60) {
+            time = '00:';
+        }
         if (num >= 3600) {
             tmpTime = parseInt(num / 3600);
             time += tmpTime < 10 ? '0' + tmpTime : tmpTime;
@@ -155,6 +160,8 @@ $(document).ready(function ()
             var endTime = $(this).attr('sectorEndTime');
             // console.log(startTime + '  ' + endTime);
             $('.youtubeFrame').attr('src', '//www.youtube.com/embed/' + youtubeID + '?start=' + startTime + '&end=' + endTime);
+            $(this).next().next().next().show(500);
+            $(this).next().next().next().next().show(500);
         });
         $('.editContent .submit.button').on('click', function () {
             if (!$(this).hasClass('disabled')) {
@@ -164,8 +171,10 @@ $(document).ready(function ()
                 var content = encodeContent($(this).prev().children().val());
                 console.log('submit: ' + index + '' + startTime + '' + endTime + content);
                 // console.log('content' + content);
-                var commandPool = creatCommand(index, startTime, endTime, content);
+                var commandPool = creatCommand(index, startTime, endTime, content, UserName);
                 postEthercalcUpdate(commandPool);
+                $(this).prev().hide(500);
+                $(this).hide(500);
             }
         });
         $('.editContent .check').change(function () {
@@ -178,12 +187,19 @@ $(document).ready(function ()
                 $(this).parent().next().next().removeClass('disabled');
                 console.log(UserName);
                 $(this).parent().prev().text(UserName);
-                postEthercalcUpdate(createWantCommand(index , UserName));
+                if ($(this).parent().next().children().val() == '') {
+                    postEthercalcUpdate(createWantCommand(index , UserName));
+                }
+                $(this).parent().prev().prev().trigger('click');
             }
             else {
                 $(this).parent().prev().addClass('hidden');
                 $(this).parent().next().next().addClass('disabled');
-                postEthercalcUpdate(createWantCommand(index , 'nobody'));
+                if ($(this).parent().next().children().val() == '') {
+                    postEthercalcUpdate(createWantCommand(index , 'nobody'));
+                }
+                $(this).parent().next().hide(500);
+                $(this).parent().next().next().hide(500);
             }
         });
     }
@@ -198,7 +214,7 @@ $(document).ready(function ()
         });
     };
 
-    var creatCommand = function (index, startTime, endTime, content) {
+    var creatCommand = function (index, startTime, endTime, content, name) {
         var commandPool = [];
 
         commandPool.push('set A' + index + ' value n ' + startTime);
@@ -206,6 +222,7 @@ $(document).ready(function ()
         if (content != '') {
             commandPool.push('set C' + index + ' text t ' + content);
         }
+        commandPool.push('set D' + index + ' text t ' + name);
         // console.log(commandPool);
         return commandPool;
     }
@@ -250,7 +267,7 @@ $(document).ready(function ()
             return;
         }
 
-        $('.editContent .field').remove();
+        $('.editContent .segment').remove();
 
         $.each(rows, function (rowIndex, row) {
             var startTime = row[0];

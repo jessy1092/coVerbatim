@@ -53,6 +53,21 @@ body {
     margin-top: 3px;
 }
 
+.editContent .edit.field {
+    -webkit-animation: editFeld 2s;
+    animation: editFeld 2s;
+}
+
+@-webkit-keyframes editFeld {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes editFeld {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
 /*-------------------------| Top |-------------------------*/
 
 /*-------------------------| Footer |-------------------------*/

@@ -161,9 +161,9 @@ $(document).ready(function ()
                 var index = parseInt($(this).attr('sectorID'));
                 var startTime = $(this).prev().prev().prev().prev().attr('sectorStartTime');
                 var endTime = $(this).prev().prev().prev().prev().attr('sectorEndTime');
-                var content = $(this).prev().children().val();
+                var content = encodeContent($(this).prev().children().val());
                 console.log('submit: ' + index + '' + startTime + '' + endTime + content);
-                console.log('content' + content);
+                // console.log('content' + content);
                 var commandPool = creatCommand(index, startTime, endTime, content);
                 postEthercalcUpdate(commandPool);
             }
@@ -255,7 +255,7 @@ $(document).ready(function ()
         $.each(rows, function (rowIndex, row) {
             var startTime = row[0];
             var endTime = row[1];
-            var content = row[2];
+            var content = decodeContent(row[2] || '');
             var user = 'nobody';
             // console.log(startTime + ' ' + endTime + ' ' + content);
             if (startTime == '' && endTime == '') {
@@ -277,5 +277,13 @@ $(document).ready(function ()
                 $('.youtubeContent .list .description').text(AuthorsArray.join(','));
             }
         });
+    }
+
+    var encodeContent = function (content) {
+        return content.replace(/\n/g, '<br>');
+    }
+
+    var decodeContent = function (content) {
+        return content.replace(/<br>/g, '\n');
     }
 });

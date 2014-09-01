@@ -1,7 +1,7 @@
 $(document).ready(function ()
 {
     var paths = location.pathname.split('/') || [];
-    var ethercalcName = paths[1] || 'welcome-to-coverbatim';
+    var ethercalcName = location.hash.substring(2) || 'welcome-to-coverbatim';
     var csv_api_source = '';
     var youtubeAPIUrl = 'http://gdata.youtube.com/feeds/api/videos/';
     var youtubeID = '';
@@ -54,7 +54,7 @@ $(document).ready(function ()
             // console.log(youtubeDuration);
             // addSector(youtubeDuration, false);
             compileEthercalc();
-            history.pushState(history_state,'', '/' + ethercalcName);
+            history.pushState(history_state,'', '/#/' + ethercalcName);
         });
     });
 

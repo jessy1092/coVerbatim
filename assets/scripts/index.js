@@ -28,6 +28,7 @@ $(document).ready(function ()
     $('.youtubeContent .submit.button').on('click', function () {
         var youtubeUrl = $('.youtubeUrl').val();
         $('.editContent .contentMenu').show(500);
+        $('.editContent .dimmer').addClass('active');
         // console.log(youtubeUrl);
         UserName = $('.userName').val().toUpperCase() || 'GUEST';
         // console.log(UserName);
@@ -87,6 +88,7 @@ $(document).ready(function ()
         $(this).parent().children().removeClass('active');
         $(this).addClass('active');
         if (ethercalcName != 'welcome-to-coverbatim') {
+            $('.editContent .dimmer').addClass('active');
             showContent = $(this).attr('contentStatus');
             compileEthercalc();
         }
@@ -148,7 +150,7 @@ $(document).ready(function ()
                         '<div class="ui checkbox"><input class="check" id="check' + index + '" type="checkbox"><label for="check' + index + '">I want this!</label></div>' +
                         '<div class="text"><textarea>' + content + '</textarea></div>' +
                         '<div class="two field"><div class="ui blue draft ' + disabled + ' button" sectorID=' + index + '>draft</div>' +
-                        '<div class="ui red finish ' + disabled + ' button" sectorID=' + index + '>finish</div></div></div></div>';
+                        '<div class="ui red finish ' + disabled + ' button" sectorID=' + index + '>finish</div></div></div><div class="ui inverted dimmer"><div class="ui loader"></div></div></div>';
         $('.contentField').append(new_item);
         $('.contentField .button').hide();
         $('.contentField .text').hide();

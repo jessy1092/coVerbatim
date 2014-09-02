@@ -6,7 +6,9 @@ $(document).ready(function ()
     var youtubeAPIUrl = 'http://gdata.youtube.com/feeds/api/videos/';
     var youtubeID = '';
     var youtubeDuration = 0;
-    var splitTimer = 30;
+    var splitTimer = 3;
+    var sectorTimer = 30;
+    var indexCoef = sectorTimer / splitTimer;
     var history_state = {};
     var UserName = 'LEE';
     var AuthorsArray = [];
@@ -97,7 +99,7 @@ $(document).ready(function ()
 
     var addSector = function (num, createEthercalc) {
         var totalSec = 0;
-        var index = 1;
+        var rowIndex = 1;
         var results = '';
         var commandPool = [];
         $('.contentField .segment').remove();
@@ -105,12 +107,19 @@ $(document).ready(function ()
             var startTime = totalSec;
             var endTime = (totalSec + splitTimer) > num ? num : (totalSec + splitTimer);
             // console.log(startTime + '' + endTime);
-            addItem(index, startTime, endTime, '', 'nobody');
+            // console.log(rowIndex);
 
-            commandPool = commandPool.concat(creatCommand(index, startTime, endTime, '', 'nobody', CONTENT_STATUS_NONE));
+            commandPool = commandPool.concat(creatCommand(rowIndex, startTime, endTime, '', 'nobody', CONTENT_STATUS_NONE));
+
+            if (startTime % sectorTimer == 0) {
+                endTime = (totalSec + sectorTimer) > num ? num : (totalSec + sectorTimer);
+                index = ((rowIndex - 1) / indexCoef) + 1;
+                addItem(index, startTime, endTime, '', 'nobody');
+            }
+
 
             totalSec += splitTimer;
-            index++;
+            rowIndex++;
         }
         addSectorListner();
         if (createEthercalc) {
@@ -176,8 +185,8 @@ $(document).ready(function ()
             var startTime = $(this).attr('sectorStartTime');
             var endTime = $(this).attr('sectorEndTime');
             // console.log(startTime + '  ' + endTime);
-            $('.youtubeFrame').attr('src', '//www.youtube.com/embed/' + youtubeID + '?start=' + startTime + '&end=' + endTime);
             if ($(this).hasClass('fold')){
+                $('.youtubeFrame').attr('src', '//www.youtube.com/embed/' + youtubeID + '?start=' + startTime + '&end=' + endTime);
                 $(this).next().next().next().show(500);
                 $(this).next().next().next().next().children('.button').show(500);
                 $(this).removeClass('fold');
@@ -196,7 +205,7 @@ $(document).ready(function ()
                 var content = encodeContent($(this).parent().prev().children().val());
                 console.log('draft: ' + index + ' ' + startTime + ' ' + endTime + ' ' + content);
                 // console.log('content' + content);
-                var commandPool = creatCommand(index, startTime, endTime, content, UserName, CONTENT_STATUS_DRAFT);
+                var commandPool = creatCommand(encodeIndex(index), startTime, endTime, content, UserName, CONTENT_STATUS_DRAFT);
                 postEthercalcUpdate(commandPool);
                 $(this).parent().prev().hide(500);
                 $(this).parent().children('.button').hide(500);
@@ -211,7 +220,7 @@ $(document).ready(function ()
                 var content = encodeContent($(this).parent().prev().children().val());
                 console.log('draft: ' + index + ' ' + startTime + ' ' + endTime + ' ' + content);
                 // console.log('content' + content);
-                var commandPool = creatCommand(index, startTime, endTime, content, UserName, CONTENT_STATUS_FINISH);
+                var commandPool = creatCommand(encodeIndex(index), startTime, endTime, content, UserName, CONTENT_STATUS_FINISH);
                 postEthercalcUpdate(commandPool);
                 $(this).parent().prev().hide(500);
                 $(this).parent().children('.button').hide(500);
@@ -220,7 +229,7 @@ $(document).ready(function ()
         });
         $('.contentField .check').change(function () {
             // console.log($(this).is(':checked'));
-            var index = $(this).parent().next().next().attr('sectorID');
+            var index = $(this).parent().next().next().children('.draft').attr('sectorID');
             // console.log(index);
             if ($(this).is(':checked')) {
                 $(this).parent().prev().removeClass('hidden');
@@ -229,7 +238,7 @@ $(document).ready(function ()
                 console.log(UserName);
                 $(this).parent().prev().text(UserName);
                 if ($(this).parent().next().children().val() == '') {
-                    postEthercalcUpdate(createWantCommand(index , UserName));
+                    postEthercalcUpdate(createWantCommand(encodeIndex(index) , UserName));
                 }
                 // $(this).parent().prev().prev().trigger('click');
             }
@@ -254,7 +263,8 @@ $(document).ready(function ()
 
     var creatCommand = function (index, startTime, endTime, content, name, status) {
         var commandPool = [];
-
+        // index = (index - 1) * parseInt(indexCoef) + 1;
+        endTime = parseInt(startTime) + parseInt(splitTimer);
         commandPool.push('set A' + index + ' value n ' + startTime);
         commandPool.push('set B' + index + ' value n ' + endTime);
         if (content != '') {
@@ -262,7 +272,7 @@ $(document).ready(function ()
         }
         commandPool.push('set D' + index + ' text t ' + name);
         commandPool.push('set E' + index + ' value n ' + status);
-        // console.log(commandPool);
+        console.log(commandPool);
         return commandPool;
     }
 
@@ -314,10 +324,21 @@ $(document).ready(function ()
             var content = decodeContent((row[2] || '').toString());
             var user = 'nobody';
             var contentStatus = row[4] || 0;
+            var index = (rowIndex / indexCoef) + 1;
             // console.log(startTime + ' ' + endTime + ' ' + content);
             if (startTime == '' && endTime == '') {
                 return;
             }
+
+            if (startTime % sectorTimer != 0) {
+                if (rowIndex == rows.length - 1) {
+                    addSectorListner();
+                    $('.youtubeContent .list .description').text(AuthorsArray.join(','));
+                }
+                return;
+            }
+            endTime = startTime + sectorTimer;
+
             if (typeof (row[3]) != 'undefined' && row[3] != '') {
                 user = row[3].toUpperCase();
             }
@@ -328,7 +349,7 @@ $(document).ready(function ()
             }
 
             if (contentStatus == showContent) {
-                addItem(rowIndex + 1, startTime, endTime, content, user);
+                addItem(index, startTime, endTime, content, user);
             }
 
             if (rowIndex == rows.length - 1) {
@@ -345,4 +366,9 @@ $(document).ready(function ()
     var decodeContent = function (content) {
         return content.replace(/<br>/g, '\n');
     }
+
+    var encodeIndex = function (index) {
+        return (index - 1) * parseInt(indexCoef) + 1;
+    }
+
 });

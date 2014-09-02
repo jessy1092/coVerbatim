@@ -17,10 +17,19 @@ body {
 
 .editContent {
     float: left;
-    height: 600px;
     width: 525px;
+    /*padding: 10px;*/
+}
+
+.contentMenu {
+    margin-bottom: 10px;
+}
+
+.contentField {
     overflow-y: auto;
-    padding: 10px;
+    height: 550px;
+    padding: 5px;
+    padding-left: 10px;
 }
 
 .text {
@@ -31,7 +40,7 @@ body {
 .youtubeContent {
     width: 400px;
     float: right;
-    padding-top: 10px;
+    padding-top: 5px;
 }
 
 .hidden {
@@ -66,6 +75,10 @@ body {
 @keyframes editFeld {
     from { opacity: 0; }
     to { opacity: 1; }
+}
+
+.finish.button {
+    float: right;
 }
 
 /*-------------------------| Top |-------------------------*/

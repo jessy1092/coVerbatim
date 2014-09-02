@@ -11,14 +11,21 @@ $(document).ready(function ()
     var UserName = 'LEE';
     var AuthorsArray = [];
 
+    var showContent = 0;
+
+    var CONTENT_STATUS_NONE   = 0;
+    var CONTENT_STATUS_DRAFT  = 1;
+    var CONTENT_STATUS_FINISH = 2;
+
     console.log(ethercalcName);
 
     $('.sidebar').sidebar({overlay: true}).sidebar('toggle');
     // $('.ui.checkbox').checkbox();
+    $('.editContent .contentMenu').hide();
 
     $('.youtubeContent .submit.button').on('click', function () {
         var youtubeUrl = $('.youtubeUrl').val();
-
+        $('.editContent .contentMenu').show(500);
         // console.log(youtubeUrl);
         UserName = $('.userName').val().toUpperCase() || 'GUEST';
         console.log(UserName);
@@ -41,7 +48,6 @@ $(document).ready(function ()
             return;
         }
 
-        $('.youtubeFrame').attr('src', '//www.youtube.com/embed/' + youtubeID);
         ethercalcName = youtubeID;
         csv_api_source = 'https://ethercalc.org/_/' + ethercalcName + '/csv';
 
@@ -55,22 +61,32 @@ $(document).ready(function ()
             // addSector(youtubeDuration, false);
             compileEthercalc();
             history.pushState(history_state,'', '/#/' + ethercalcName);
+            $('.youtubeFrame').attr('src', '//www.youtube.com/embed/' + youtubeID);
         });
     });
 
-    $('.editContent .check').change(function () {
+    $('.contentField .check').change(function () {
         // console.log($(this).is(':checked'));
         var index = $(this).parent().next().next().attr('sectorID');
         // console.log(index);
         if ($(this).is(':checked')) {
             $(this).parent().prev().removeClass('hidden');
-            $(this).parent().next().next().removeClass('disabled');
+            $(this).parent().next().next().children('.button').removeClass('disabled');
             console.log(UserName);
             $(this).parent().prev().text(UserName);
         }
         else {
             $(this).parent().prev().addClass('hidden');
-            $(this).parent().next().next().addClass('disabled');
+            $(this).parent().next().next().children('.button').addClass('disabled');
+        }
+    });
+
+    $('.editContent .menu .item').click('on', function () {
+        $(this).parent().children().removeClass('active');
+        $(this).addClass('active');
+        if (ethercalcName != 'welcome-to-coverbatim') {
+            showContent = $(this).attr('contentStatus');
+            compileEthercalc();
         }
     });
 
@@ -84,14 +100,14 @@ $(document).ready(function ()
         var index = 1;
         var results = '';
         var commandPool = [];
-        $('.editContent .segment').remove();
+        $('.contentField .segment').remove();
         while (totalSec <= num) {
             var startTime = totalSec;
             var endTime = (totalSec + splitTimer) > num ? num : (totalSec + splitTimer);
             // console.log(startTime + '' + endTime);
             addItem(index, startTime, endTime, '', 'nobody');
 
-            commandPool = commandPool.concat(creatCommand(index, startTime, endTime, '', 'nobody'));
+            commandPool = commandPool.concat(creatCommand(index, startTime, endTime, '', 'nobody', CONTENT_STATUS_NONE));
 
             totalSec += splitTimer;
             index++;
@@ -118,14 +134,15 @@ $(document).ready(function ()
             hiddenOrNot = 'hidden';
         }
 
-        var new_item =  '<div class="ui form segment"><div class="edit field"><div class="ui orange ribbon label sectorLabel " sectorStartTime=' + startTime + ' sectorEndTime=' + endTime + '>' + transSec(startTime) +' ~ ' + transSec(endTime) + '</div>' +
+        var new_item =  '<div class="ui form segment"><div class="edit field"><div class="ui orange ribbon label sectorLabel fold" sectorStartTime=' + startTime + ' sectorEndTime=' + endTime + '>' + transSec(startTime) +' ~ ' + transSec(endTime) + '</div>' +
                         '<div class="ui ' + color + ' label name ' + hiddenOrNot +'">' + user + '</div>' +
                         '<div class="ui checkbox"><input class="check" id="check' + index + '" type="checkbox"><label for="check' + index + '">I want this!</label></div>' +
                         '<div class="text"><textarea>' + content + '</textarea></div>' +
-                        '<div class="ui blue submit ' + disabled + ' button" sectorID=' + index + '>Submit</div></div></div>';
-        $('.editContent').append(new_item);
-        $('.editContent .button').hide();
-        $('.editContent .text').hide();
+                        '<div class="two field"><div class="ui blue draft ' + disabled + ' button" sectorID=' + index + '>draft</div>' +
+                        '<div class="ui red finish ' + disabled + ' button" sectorID=' + index + '>finish</div></div></div></div>';
+        $('.contentField').append(new_item);
+        $('.contentField .button').hide();
+        $('.contentField .text').hide();
         if (disabled == '') {
             $('#check' + index).prop('checked', true);
         }
@@ -160,46 +177,67 @@ $(document).ready(function ()
             var endTime = $(this).attr('sectorEndTime');
             // console.log(startTime + '  ' + endTime);
             $('.youtubeFrame').attr('src', '//www.youtube.com/embed/' + youtubeID + '?start=' + startTime + '&end=' + endTime);
-            $(this).next().next().next().show(500);
-            $(this).next().next().next().next().show(500);
-        });
-        $('.editContent .submit.button').on('click', function () {
-            if (!$(this).hasClass('disabled')) {
-                var index = parseInt($(this).attr('sectorID'));
-                var startTime = $(this).prev().prev().prev().prev().attr('sectorStartTime');
-                var endTime = $(this).prev().prev().prev().prev().attr('sectorEndTime');
-                var content = encodeContent($(this).prev().children().val());
-                console.log('submit: ' + index + '' + startTime + '' + endTime + content);
-                // console.log('content' + content);
-                var commandPool = creatCommand(index, startTime, endTime, content, UserName);
-                postEthercalcUpdate(commandPool);
-                $(this).prev().hide(500);
-                $(this).hide(500);
+            if ($(this).hasClass('fold')){
+                $(this).next().next().next().show(500);
+                $(this).next().next().next().next().children('.button').show(500);
+                $(this).removeClass('fold');
+            }
+            else {
+                $(this).next().next().next().hide(500);
+                $(this).next().next().next().next().children('.button').hide(500);
+                $(this).addClass('fold');
             }
         });
-        $('.editContent .check').change(function () {
+        $('.contentField .draft.button').on('click', function () {
+            if (!$(this).hasClass('disabled')) {
+                var index = parseInt($(this).attr('sectorID'));
+                var startTime = $(this).parent().prev().prev().prev().prev().attr('sectorStartTime');
+                var endTime = $(this).parent().prev().prev().prev().prev().attr('sectorEndTime');
+                var content = encodeContent($(this).parent().prev().children().val());
+                console.log('draft: ' + index + ' ' + startTime + ' ' + endTime + ' ' + content);
+                // console.log('content' + content);
+                var commandPool = creatCommand(index, startTime, endTime, content, UserName, CONTENT_STATUS_DRAFT);
+                postEthercalcUpdate(commandPool);
+                $(this).parent().prev().hide(500);
+                $(this).parent().children('.button').hide(500);
+                $('.contentField .segment').hide(500);
+            }
+        });
+        $('.contentField .finish.button').on('click', function () {
+            if (!$(this).hasClass('disabled')) {
+                var index = parseInt($(this).attr('sectorID'));
+                var startTime = $(this).parent().prev().prev().prev().prev().attr('sectorStartTime');
+                var endTime = $(this).parent().prev().prev().prev().prev().attr('sectorEndTime');
+                var content = encodeContent($(this).parent().prev().children().val());
+                console.log('draft: ' + index + ' ' + startTime + ' ' + endTime + ' ' + content);
+                // console.log('content' + content);
+                var commandPool = creatCommand(index, startTime, endTime, content, UserName, CONTENT_STATUS_FINISH);
+                postEthercalcUpdate(commandPool);
+                $(this).parent().prev().hide(500);
+                $(this).parent().children('.button').hide(500);
+                $('.contentField .segment').hide(500);
+            }
+        });
+        $('.contentField .check').change(function () {
             // console.log($(this).is(':checked'));
             var index = $(this).parent().next().next().attr('sectorID');
             // console.log(index);
             if ($(this).is(':checked')) {
                 $(this).parent().prev().removeClass('hidden');
                 $(this).parent().prev().addClass('teal');
-                $(this).parent().next().next().removeClass('disabled');
+                $(this).parent().next().next().children('.button').removeClass('disabled');
                 console.log(UserName);
                 $(this).parent().prev().text(UserName);
                 if ($(this).parent().next().children().val() == '') {
                     postEthercalcUpdate(createWantCommand(index , UserName));
                 }
-                $(this).parent().prev().prev().trigger('click');
+                // $(this).parent().prev().prev().trigger('click');
             }
             else {
                 $(this).parent().prev().addClass('hidden');
-                $(this).parent().next().next().addClass('disabled');
-                if ($(this).parent().next().children().val() == '') {
-                    postEthercalcUpdate(createWantCommand(index , 'nobody'));
-                }
+                $(this).parent().next().next().children('.button').addClass('disabled');
                 $(this).parent().next().hide(500);
-                $(this).parent().next().next().hide(500);
+                $(this).parent().next().next().children('.button').hide(500);
             }
         });
     }
@@ -214,7 +252,7 @@ $(document).ready(function ()
         });
     };
 
-    var creatCommand = function (index, startTime, endTime, content, name) {
+    var creatCommand = function (index, startTime, endTime, content, name, status) {
         var commandPool = [];
 
         commandPool.push('set A' + index + ' value n ' + startTime);
@@ -223,6 +261,7 @@ $(document).ready(function ()
             commandPool.push('set C' + index + ' text t ' + content);
         }
         commandPool.push('set D' + index + ' text t ' + name);
+        commandPool.push('set E' + index + ' value n ' + status);
         // console.log(commandPool);
         return commandPool;
     }
@@ -242,7 +281,7 @@ $(document).ready(function ()
             contentType: 'text/plan',
             processData: false,
             data: command
-        });
+        }).done(compileEthercalc);
     }
 
     var postInitEthercalc = function () {
@@ -267,13 +306,14 @@ $(document).ready(function ()
             return;
         }
 
-        $('.editContent .segment').remove();
+        $('.contentField .segment').remove();
 
         $.each(rows, function (rowIndex, row) {
             var startTime = row[0];
             var endTime = row[1];
-            var content = decodeContent(row[2] || '');
+            var content = decodeContent((row[2] || '').toString());
             var user = 'nobody';
+            var contentStatus = row[4] || 0;
             // console.log(startTime + ' ' + endTime + ' ' + content);
             if (startTime == '' && endTime == '') {
                 return;
@@ -287,7 +327,9 @@ $(document).ready(function ()
                 // console.log(AuthorsArray);
             }
 
-            addItem(rowIndex + 1, startTime, endTime, content, user);
+            if (contentStatus == showContent) {
+                addItem(rowIndex + 1, startTime, endTime, content, user);
+            }
 
             if (rowIndex == rows.length - 1) {
                 addSectorListner();

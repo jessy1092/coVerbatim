@@ -64,18 +64,30 @@
             </div>
 
             <div class="editContent">
-                <div class="ui form segment">
-                    <div class="field">
-                        <div class="ui orange ribbon label sectorLabel" sectorStartTime='' sectorEndTime=''> time </div>
-                        <div class="ui teal label name hidden">Lee</div>
-                        <div class="ui checkbox">
-                            <input class="check" id="check1" type="checkbox">
-                            <label for="check1">I want this!</label>
+                <div class="contentMenu">
+                    <div class="ui secondary pointing menu">
+                        <div class="active item" contentStatus="0">Empty</div>
+                        <div class="item" contentStatus="1">Draft</div>
+                        <div class="item" contentStatus="2">Finish</div>
+                    </div>
+                </div>
+                <div class="contentField">
+                    <div class="ui form segment">
+                        <div class="field">
+                            <div class="ui orange ribbon label sectorLabel" sectorStartTime='' sectorEndTime=''> time </div>
+                            <div class="ui teal label name hidden">Lee</div>
+                            <div class="ui checkbox">
+                                <input class="check" id="check1" type="checkbox">
+                                <label for="check1">I want this!</label>
+                            </div>
+                            <div class="text">
+                                <textarea>Welcome to coVerbatim. It is the simple verbatim system. Let users coberate to create youtube's verbatim easily.</textarea>
+                            </div>
+                            <div class="two field">
+                                <div class="ui blue draft disabled button">Draft</div>
+                                <div class="ui red disabled finish button">Finish</div>
+                            </div>
                         </div>
-                        <div class="text">
-                            <textarea>Welcome to coVerbatim. It is the simple verbatim system. Let users coberate to create youtube's verbatim easily.</textarea>
-                        </div>
-                        <div class="ui blue submit disabled button">Submit</div>
                     </div>
                 </div>
             </div>

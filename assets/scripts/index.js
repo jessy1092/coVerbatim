@@ -30,7 +30,7 @@ $(document).ready(function ()
         $('.editContent .contentMenu').show(500);
         // console.log(youtubeUrl);
         UserName = $('.userName').val().toUpperCase() || 'GUEST';
-        console.log(UserName);
+        // console.log(UserName);
         if (youtubeUrl == '') {
             return;
         }
@@ -74,7 +74,7 @@ $(document).ready(function ()
         if ($(this).is(':checked')) {
             $(this).parent().prev().removeClass('hidden');
             $(this).parent().next().next().children('.button').removeClass('disabled');
-            console.log(UserName);
+            // console.log(UserName);
             $(this).parent().prev().text(UserName);
         }
         else {
@@ -123,7 +123,7 @@ $(document).ready(function ()
         }
         addSectorListner();
         if (createEthercalc) {
-            console.log(commandPool);
+            // console.log(commandPool);
             postEthercalcUpdate(commandPool);
         }
     }
@@ -138,7 +138,7 @@ $(document).ready(function ()
         else {
             disabled = '';
         }
-        console.log(user);
+        // console.log(user);
         if (user == 'nobody' || user == '') {
             hiddenOrNot = 'hidden';
         }
@@ -203,13 +203,11 @@ $(document).ready(function ()
                 var startTime = $(this).parent().prev().prev().prev().prev().attr('sectorStartTime');
                 var endTime = $(this).parent().prev().prev().prev().prev().attr('sectorEndTime');
                 var content = encodeContent($(this).parent().prev().children().val());
-                console.log('draft: ' + index + ' ' + startTime + ' ' + endTime + ' ' + content);
+                // console.log('draft: ' + index + ' ' + startTime + ' ' + endTime + ' ' + content);
                 // console.log('content' + content);
                 var commandPool = creatCommand(encodeIndex(index), startTime, endTime, content, UserName, CONTENT_STATUS_DRAFT);
                 postEthercalcUpdate(commandPool);
-                $(this).parent().prev().hide(500);
-                $(this).parent().children('.button').hide(500);
-                $('.contentField .segment').hide(500);
+                $(this).parent().parent().parent().hide(500);
             }
         });
         $('.contentField .finish.button').on('click', function () {
@@ -218,13 +216,11 @@ $(document).ready(function ()
                 var startTime = $(this).parent().prev().prev().prev().prev().attr('sectorStartTime');
                 var endTime = $(this).parent().prev().prev().prev().prev().attr('sectorEndTime');
                 var content = encodeContent($(this).parent().prev().children().val());
-                console.log('draft: ' + index + ' ' + startTime + ' ' + endTime + ' ' + content);
+                // console.log('draft: ' + index + ' ' + startTime + ' ' + endTime + ' ' + content);
                 // console.log('content' + content);
                 var commandPool = creatCommand(encodeIndex(index), startTime, endTime, content, UserName, CONTENT_STATUS_FINISH);
                 postEthercalcUpdate(commandPool);
-                $(this).parent().prev().hide(500);
-                $(this).parent().children('.button').hide(500);
-                $('.contentField .segment').hide(500);
+                $(this).parent().parent().parent().hide(500);
             }
         });
         $('.contentField .check').change(function () {
@@ -235,7 +231,7 @@ $(document).ready(function ()
                 $(this).parent().prev().removeClass('hidden');
                 $(this).parent().prev().addClass('teal');
                 $(this).parent().next().next().children('.button').removeClass('disabled');
-                console.log(UserName);
+                // console.log(UserName);
                 $(this).parent().prev().text(UserName);
                 if ($(this).parent().next().children().val() == '') {
                     postEthercalcUpdate(createWantCommand(encodeIndex(index) , UserName));
@@ -272,7 +268,7 @@ $(document).ready(function ()
         }
         commandPool.push('set D' + index + ' text t ' + name);
         commandPool.push('set E' + index + ' value n ' + status);
-        console.log(commandPool);
+        // console.log(commandPool);
         return commandPool;
     }
 
@@ -284,14 +280,14 @@ $(document).ready(function ()
 
     var postEthercalcUpdate = function (commandPool) {
         var command =   commandPool.join('\n');
-        console.log(command);
+        // console.log(command);
         $.ajax({
-            url: "https://ethercalc.org/_/"+ethercalcName,
+            url: "https://ethercalc.org/_/" + ethercalcName,
             type: 'POST',
             contentType: 'text/plan',
             processData: false,
             data: command
-        }).done(compileEthercalc);
+        }).done();
     }
 
     var postInitEthercalc = function () {

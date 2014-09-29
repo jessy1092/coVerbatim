@@ -9,7 +9,8 @@
         }
     ],
     "scripts": {
-        "start": "gulp dev"
+        "start": "gulp dev",
+        "test": "echo \"Warning: no test specified\" && exit 0"
     },
     "engines":{
         "node": "0.10.x"

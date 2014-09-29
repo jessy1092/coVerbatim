@@ -20,6 +20,6 @@ branches:
 env:
   global:
     - REPO="git@github.com:jessy1092/coVerbatim"
-    - secure: "C0+M7sdzOfW+Sgvm3iaqKZA2easdt/Gc+Y+p2cojz4xD2q9+BeYhZq9BBae77m4ygpLlIi5VVAoHINtjW5yyakXvW4N7tcPpzBjzNTpgBL0mEaIkyzXNDeeUHuIvR5gZ9pQwIRBhziSxzyM59vG3gmhuiPZnWL+7svPseUTsZ9c="
+    - secure: Zl7MQbRMpCjA4rC2zy7xQtDEDRC0zyGXpjtzdnaj7Tvfk9qiED0O8upQqB7BY571Ydo848r/HA7t+PAS0WAytV1/kOr/uB/ATLKEdtyaL04RDQVudE5AjIRiMbutwJKNA5+Tpdej2p5YFtDeZ9nn40Wrr/pq8UnMweLYZnGAahg=
 
 after_success: .travis/after_success.sh

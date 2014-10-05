@@ -1,0 +1,24 @@
+.editContent
+  .contentMenu
+    .ui.secondary.pointing.menu
+      .active.item(contentStatus="0") Empty
+      .item(contentStatus="1") Draft
+      .item(contentStatus="2") Finish
+  .contentField
+    .ui.form.segment
+      .field
+        .ui.orange.ribbon.label.sectorLabel(sectorStartTime='' sectorEndTime='') time
+        .ui.teal.label.name.hidden Lee
+        .ui.checkbox
+          input.check#check1(type="checkbox")
+          label(for="check1") I want this!
+        .text
+          textarea
+            | Welcome to coVerbatim. It is the simple verbatim system.
+            | Let users coberate to create youtube's verbatim easily.
+            | coVerbatim is an open source project.
+        .two.field
+          .ui.blue.draft.disabled.button Draft
+          .ui.red.disabled.finish.button Finish
+      .ui.inverted.dimmer
+        .ui.loader

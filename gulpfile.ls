@@ -1,4 +1,4 @@
-require! <[gulp gulp-util express connect-livereload gulp-livereload path]>
+require! <[gulp gulp-util express connect-livereload gulp-livereload path gulp-jade]>
 
 app = express!
 build_path = '_public'
@@ -7,16 +7,21 @@ gulp.task 'index', ->
     gulp.src './index.html'
         .pipe gulp.dest "#{build_path}"
 
+gulp.task 'html', ->
+    gulp.src './app/views/index.jade'
+        .pipe gulp-jade!
+        .pipe gulp.dest "#{build_path}"
+
 gulp.task 'vendor', ->
     gulp.src './vendors/**/*'
         .pipe gulp.dest "#{build_path}/vendors"
 
 gulp.task 'js' ->
-    gulp.src './assets/scripts/*.js'
+    gulp.src './app/assets/scripts/*.js'
         .pipe gulp.dest "#{build_path}/assets/scripts/"
 
 gulp.task 'css', ->
-    gulp.src './assets/styles/*.css'
+    gulp.src './app/assets/styles/*.css'
         .pipe gulp.dest "#{build_path}/assets/styles/"
 
 gulp.task 'server', ->
@@ -27,10 +32,11 @@ gulp.task 'server', ->
 
 gulp.task 'watch', ->
     gulp-livereload.listen silent: true
-    gulp.watch './index.html', <[index]> .on \change, gulp-livereload.changed
-    gulp.watch './assets/scripts/*.js', <[js]> .on \change, gulp-livereload.changed
-    gulp.watch './assets/styles/*.css', <[css]> .on \change, gulp-livereload.changed
+    # gulp.watch './index.html', <[index]> .on \change, gulp-livereload.changed
+    gulp.watch './app/views/*.jade', <[html]> .on \change, gulp-livereload.changed
+    gulp.watch './app/assets/scripts/*.js', <[js]> .on \change, gulp-livereload.changed
+    gulp.watch './app/assets/styles/*.css', <[css]> .on \change, gulp-livereload.changed
 
-gulp.task 'build', <[index vendor js css]>
+gulp.task 'build', <[html vendor js css]>
 gulp.task 'dev', <[build server watch]>
 gulp.task 'default', <[build]>

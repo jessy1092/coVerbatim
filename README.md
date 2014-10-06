@@ -1,24 +1,23 @@
 coVerbatim
 =============
-Welcome to coVerbatim. It is the simple verbatim system. Let users coberate to create youtube's verbatim easily. 
+Welcome to coVerbatim. It is the simple verbatim system. Let users coberate to create youtube's verbatim easily.
 
-Imspire from [hackfoldr-2.0](http://hack.etblue.tw/) and [oTranscribe](http://otranscribe.com/). 
+coVerbatim is an open source project. Imspire from [hackfoldr-2.0](http://hack.etblue.tw/) and [oTranscribe](http://otranscribe.com/). 
 
-Thanks [ethercalc](https://ethercalc.org/) support database.
+Thanks [ethercalc](https://ethercalc.org/) support backend.
 
 ## Structure
 
-- asserts
-    + data
-    + imgs
-    + scripts
-    + styles
+- app
+    + asserts
+        - scripts
+        - styles
+    + views
 - vendor
     + angular
     + d3js
     + jquery
     + semantic-ui
-- views
 
 ## Installation
 
@@ -29,6 +28,16 @@ Thanks [ethercalc](https://ethercalc.org/) support database.
 and then open `http://localhost:3000/`
 
 ## Change Log
+
+#### 2014/10/06 v0.1.1
+- Use jade.
+
+#### 2014/09/03 v0.1.0
+- Cut youtube film.
+- Add nickname.
+- Add Empty, Draft and Finish type.
+- Support multi-line.
+- Use ethercalc as backend. 
 
 #### 2014/08/30 v0.0.1
 - init

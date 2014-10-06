@@ -1,8 +1,8 @@
 coVerbatim
 =============
-Welcome to coVerbatim. It is the simple verbatim system. Let users coberate to create youtube's verbatim easily.
+Welcome to coVerbatim. It is the simple verbatim system. Let users cooperate to create youtube's verbatim easily.
 
-coVerbatim is an open source project. Imspire from [hackfoldr-2.0](http://hack.etblue.tw/) and [oTranscribe](http://otranscribe.com/). 
+coVerbatim is an open source project. Inspire from [hackfoldr-2.0](http://hack.etblue.tw/) and [oTranscribe](http://otranscribe.com/). 
 
 Thanks [ethercalc](https://ethercalc.org/) support backend.
 

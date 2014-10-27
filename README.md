@@ -1,6 +1,7 @@
 coVerbatim
 =============
 [![Dependency Status](https://david-dm.org/jessy1092/coVerbatim.svg?style=flat-square)](https://david-dm.org/jessy1092/coVerbatim)
+
 Welcome to coVerbatim. It is the simple verbatim system. Let users cooperate to create youtube's verbatim easily.
 
 coVerbatim is an open source project. Inspire from [hackfoldr-2.0](http://hack.etblue.tw/) and [oTranscribe](http://otranscribe.com/). 
@@ -11,13 +12,10 @@ Thanks [ethercalc](https://ethercalc.org/) support backend.
 
 - app
     + asserts
-        - scripts
-        - styles
+    + scripts
+    + styles
     + views
 - vendor
-    + angular
-    + d3js
-    + jquery
     + semantic-ui
 
 ## Development
